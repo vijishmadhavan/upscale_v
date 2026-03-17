@@ -92,10 +92,15 @@ try:
 except ImportError:
     SRVGGNetCompact = None
 
-# FlashVSR imports
-from diffsynth import ModelManager, FlashVSRFullPipeline
-from utils.utils import Buffer_LQ4x_Proj
-from einops import rearrange
+# FlashVSR imports (optional - requires Ampere GPU or newer)
+try:
+    from diffsynth import ModelManager, FlashVSRFullPipeline
+    from utils.utils import Buffer_LQ4x_Proj
+    from einops import rearrange
+    FLASHVSR_AVAILABLE = True
+except ImportError as e:
+    FLASHVSR_AVAILABLE = False
+    print(f"⚠️ FlashVSR not available: {e}")
 
 # YOLOv8 imports for person detection
 try:
@@ -1613,6 +1618,8 @@ Supported resolutions:
                         help="Don't preserve audio from input video")
     parser.add_argument("--fast", action="store_true",
                         help="Enable fast mode (skip FlashVSR, go directly to SeedVR2). Default: creative mode with FlashVSR")
+    parser.add_argument("--no-flashvsr", action="store_true",
+                        help="Disable FlashVSR stage (useful for non-Ampere GPUs like T4)")
     parser.add_argument("--creative", action="store_true",
                         help="Force creative mode even if text detected (overrides auto-skip)")
     parser.add_argument("--debug", action="store_true",
@@ -2067,9 +2074,15 @@ def main():
         sys.exit(1)
     
     # Get optimal settings based on target resolution and creative mode
-    # Default is creative mode (with FlashVSR), unless --fast is specified
+    # Default is creative mode (with FlashVSR), unless --fast or --no-flashvsr is specified
     # --creative forces creative mode even if text/long video detected (no auto-skip)
-    creative_mode = not args.fast  # Default: True (creative mode)
+    if args.no_flashvsr:
+        creative_mode = False
+    elif not FLASHVSR_AVAILABLE:
+        creative_mode = False
+        print("⚠️ FlashVSR not available - running without it")
+    else:
+        creative_mode = not args.fast  # Default: True (creative mode)
     force_creative = args.creative  # --creative means force creative (override auto-skip)
     optimal_settings = get_optimal_settings((target_width, target_height), creative_mode=creative_mode)
 
