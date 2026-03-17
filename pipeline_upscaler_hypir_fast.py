@@ -2594,7 +2594,7 @@ def main():
                     elif target_width == 3840 and target_height == 2160:
                         res_suffix = "_4K"
 
-                    streaming_output_path = f"output/{base_name}_hypir{res_suffix}.mp4"
+                    streaming_output_path = f"output/{base_name}_upscaled{res_suffix}.mp4"
                 else:
                     streaming_output_path = args.output
 
@@ -2650,7 +2650,7 @@ def main():
                     elif target_width == 3840 and target_height == 2160:
                         res_suffix = "_4K"
                     
-                    streaming_output_path = f"output/{base_name}_hypir{res_suffix}.mp4"
+                    streaming_output_path = f"output/{base_name}_upscaled{res_suffix}.mp4"
                 else:
                     streaming_output_path = args.output
 
@@ -2719,9 +2719,9 @@ def main():
                     res_suffix = "_4K"
                 
                 if args.output_format == "png":
-                    output_path = f"output/{base_name}_hypir{res_suffix}"
+                    output_path = f"output/{base_name}_upscaled{res_suffix}"
                 else:
-                    output_path = f"output/{base_name}_hypir{res_suffix}.mp4"
+                    output_path = f"output/{base_name}_upscaled{res_suffix}.mp4"
             else:
                 output_path = args.output
             
